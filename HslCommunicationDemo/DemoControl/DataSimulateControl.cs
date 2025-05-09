@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -42,7 +41,8 @@ namespace HslCommunicationDemo.DemoControl
 
 				button_start.Text = "Start";
 				button_finish.Text = "Stop";
-				label1.Text = "The x means an integer increasing from 0, example: x%2==0? 10:0 Or (short)(Math.Sin(2*Math.PI*x/100)*100) Or (short)r.Next(100,200)";
+				button_onece.Text = "Once";
+				label1.Text = "The x means an integer increasing from 0,expree example: x%2==0? 10:0 Or (short)(Math.Sin(2*Math.PI*x/100)*100) Or (short)r.Next(100,200)";
 			}
 		}
 
@@ -127,6 +127,11 @@ namespace HslCommunicationDemo.DemoControl
 			if (threadWrite != null && threadEnable == false && threadWrite.ThreadState == ThreadState.Running) threadWrite?.Abort( );
 		}
 
+		private void RunOnce()
+		{
+
+		}
+
 		private void ThreadWriteMethod()
 		{
 			while(threadEnable)
@@ -144,6 +149,7 @@ namespace HslCommunicationDemo.DemoControl
 						parameters.Add( new Parameter( "x", simulate.X ) );
 						parameters.Add( new Parameter( "r", HslCommunication.Core.HslHelper.HslRandom ) );
 						object value = simulate.Script.Eval( simulate.Express, parameters.ToArray( ) );
+						if (value == null) continue;
 						Type type = value.GetType( );
 
 						OperateResult writeResult = null;
@@ -192,6 +198,7 @@ namespace HslCommunicationDemo.DemoControl
 							Invoke( new Action( ( ) =>
 							{
 								DemoUtils.ShowMessage( $"Write address[{simulate.Address}] failed: {writeResult.Message}" );
+								simulate.Dgvr.Cells[1].Selected = true;
 							} ) );
 							return;
 						}
@@ -201,6 +208,95 @@ namespace HslCommunicationDemo.DemoControl
 					}
 				}
 			}
+		}
+
+		private void button_onece_Click( object sender, EventArgs e )
+		{
+			if (readWrite == null) return;
+
+			List<SimulateWrite> tmp = new List<SimulateWrite>( );
+			for (int i = 0; i < dataGridView1.Rows.Count; i++)
+			{
+				DataGridViewRow dgvr = dataGridView1.Rows[i];
+
+				if (dgvr.Cells[1].Value == null) continue;
+				if (dgvr.IsNewRow) continue;
+
+				try
+				{
+					SimulateWrite dataTableItem = GetSimulateWrite( dgvr );
+					dataTableItem.Script = new DynamicExpresso.Interpreter( );
+					dataTableItem.Script.Eval( dataTableItem.Express, new Parameter( "x", 0 ), new Parameter( "r", HslCommunication.Core.HslHelper.HslRandom ) );
+					dataTableItem.Dgvr = dgvr;
+					dataTableItem.ExecuteTime = DateTime.Now.AddDays( -1 );
+					tmp.Add( dataTableItem );
+				}
+				catch (Exception ex)
+				{
+					DemoUtils.ShowMessage( $"Row[{i}] has wrong value: " + ex.Message );
+					return;
+				}
+			}
+
+			DateTime dateTime = DateTime.Now;
+			for (int i = 0; i < tmp.Count; i++)
+			{
+				SimulateWrite simulate = tmp[i];
+				if ((DateTime.Now - simulate.ExecuteTime).TotalMilliseconds > simulate.Time)
+				{
+					List<Parameter> parameters = new List<Parameter>( );
+					parameters.Add( new Parameter( "x", simulate.X ) );
+					parameters.Add( new Parameter( "r", HslCommunication.Core.HslHelper.HslRandom ) );
+					object value = simulate.Script.Eval( simulate.Express, parameters.ToArray( ) );
+					if (value == null) continue;
+					Type type = value.GetType( );
+
+					OperateResult writeResult = null;
+					if (type == typeof( bool )) writeResult = readWrite.Write( simulate.Address, (bool)value );
+					else if (type == typeof( bool[] )) writeResult = readWrite.Write( simulate.Address, (bool[])value );
+					else if (type == typeof( short )) writeResult = readWrite.Write( simulate.Address, (short)value );
+					else if (type == typeof( short[] )) writeResult = readWrite.Write( simulate.Address, (short[])value );
+					else if (type == typeof( byte )) writeResult = readWrite.Write( simulate.Address, new byte[] { (byte)value } );
+					else if (type == typeof( byte[] )) writeResult = readWrite.Write( simulate.Address, (byte[])value );
+					else if (type == typeof( int )) writeResult = readWrite.Write( simulate.Address, (int)value );
+					else if (type == typeof( int[] )) writeResult = readWrite.Write( simulate.Address, (int[])value );
+					else if (type == typeof( long )) writeResult = readWrite.Write( simulate.Address, (long)value );
+					else if (type == typeof( long[] )) writeResult = readWrite.Write( simulate.Address, (long[])value );
+					else if (type == typeof( float )) writeResult = readWrite.Write( simulate.Address, (float)value );
+					else if (type == typeof( float[] )) writeResult = readWrite.Write( simulate.Address, (float[])value );
+					else if (type == typeof( double )) writeResult = readWrite.Write( simulate.Address, (double)value );
+					else if (type == typeof( double[] )) writeResult = readWrite.Write( simulate.Address, (double[])value );
+					else if (type == typeof( string )) writeResult = readWrite.Write( simulate.Address, (string)value );
+					else
+					{
+						DemoUtils.ShowMessage( $"Write address[{simulate.Address}] failed, type[{type.Name}] is not supported" );
+						return;
+					}
+
+					try
+					{
+						simulate.Dgvr.Cells[4].Value = value;
+					}
+					catch (System.InvalidOperationException)
+					{
+						return;
+					}
+
+					if (writeResult.IsSuccess)
+					{
+						simulate.ExecuteTime = DateTime.Now;
+						simulate.X++;
+					}
+					else
+					{
+						DemoUtils.ShowMessage( $"Write address[{simulate.Address}] failed: {writeResult.Message}" );
+						simulate.Dgvr.Cells[1].Selected = true;
+						return;
+					}
+				}
+			}
+
+			DemoUtils.ShowMessage( "Write all address success! timecost : " + (DateTime.Now - dateTime).TotalMilliseconds.ToString( "F0" ) + " ms" );
 		}
 
 		public SimulateWrite GetSimulateWrite( DataGridViewRow dgvr )
@@ -250,126 +346,9 @@ namespace HslCommunicationDemo.DemoControl
 			return count;
 		}
 
-        private void importToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.Filter = "CSV文件 (*.csv)|*.csv|所有文件 (*.*)|*.*";
-                openFileDialog.Title = "选择CSV文件";
+	}
 
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    try
-                    {
-                        string filePath = openFileDialog.FileName;
-                        ImportFromCsv(filePath);
-                        MessageBox.Show("数据导入成功！", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"导入失败: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-        }
-
-        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
-            {
-                saveFileDialog.Filter = "CSV文件 (*.csv)|*.csv|所有文件 (*.*)|*.*";
-                saveFileDialog.Title = "保存CSV文件";
-                saveFileDialog.FileName = "data_export.csv";
-
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    try
-                    {
-                        string filePath = saveFileDialog.FileName;
-                        ExportToCsv(filePath);
-                        MessageBox.Show("数据导出成功！", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"导出失败: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-        }
-
-        private void ImportFromCsv(string filePath)
-        {
-            DataTable dataTable = new DataTable();
-
-            using (StreamReader reader = new StreamReader(filePath))
-            {
-                // 读取标题行
-                string headerLine = reader.ReadLine();
-                if (string.IsNullOrEmpty(headerLine))
-                    return;
-
-                string[] headers = headerLine.Split('\t');
-                foreach (string header in headers)
-                {
-                    dataTable.Columns.Add(header.Trim());
-                }
-
-                // 读取数据行
-                while (!reader.EndOfStream)
-                {
-                    string dataLine = reader.ReadLine();
-                    if (string.IsNullOrEmpty(dataLine))
-                        continue;
-
-                    string[] values = dataLine.Split('\t');
-
-                    // 添加新行
-                    int rowIndex = dataGridView1.Rows.Add();
-
-                    // 填充数据
-                    for (int i = 0; i < Math.Min(values.Length, dataGridView1.Columns.Count); i++)
-                    {
-                        dataGridView1.Rows[rowIndex].Cells[i].Value = values[i].Trim();
-                    }
-                }
-            }
-        }
-
-        private void ExportToCsv(string filePath)
-        {
-            using (StreamWriter writer = new StreamWriter(filePath, false, System.Text.Encoding.UTF8))
-            {
-                // 写入标题行
-                for (int i = 0; i < dataGridView1.Columns.Count; i++)
-                {
-                    writer.Write(dataGridView1.Columns[i].HeaderText);
-                    if (i < dataGridView1.Columns.Count - 1)
-                        writer.Write("\t");
-                }
-                writer.WriteLine();
-
-                // 写入数据行
-                for (int i = 0; i < dataGridView1.Rows.Count; i++)
-                {
-                    for (int j = 0; j < dataGridView1.Columns.Count; j++)
-                    {
-                        if (!dataGridView1.Rows[i].IsNewRow)
-                        {
-                            string value = dataGridView1.Rows[i].Cells[j].Value?.ToString() ?? "";
-
-                            writer.Write(value);
-                            if (j < dataGridView1.Columns.Count - 1)
-                                writer.Write("\t");
-                        }
-                    }
-                    if (!dataGridView1.Rows[i].IsNewRow)
-                        writer.WriteLine();
-                }
-            }
-        }
-    }
-
-    public class SimulateWrite
+	public class SimulateWrite
 	{
 		public string Name { get; set; }
 

@@ -58,5 +58,29 @@ namespace HslCommunicationDemo {
                 this["UseHdd"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LoginName {
+            get {
+                return ((string)(this["LoginName"]));
+            }
+            set {
+                this["LoginName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LoginPassword {
+            get {
+                return ((string)(this["LoginPassword"]));
+            }
+            set {
+                this["LoginPassword"] = value;
+            }
+        }
     }
 }

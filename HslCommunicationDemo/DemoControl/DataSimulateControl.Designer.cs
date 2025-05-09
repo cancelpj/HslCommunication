@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent( )
         {
-            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -42,11 +41,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.button_start = new System.Windows.Forms.Button();
             this.button_finish = new System.Windows.Forms.Button();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button_onece = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -74,7 +70,6 @@
             this.Column_express,
             this.Column_current,
             this.Column_mark});
-            this.dataGridView1.ContextMenuStrip = this.contextMenuStrip1;
             this.dataGridView1.Location = new System.Drawing.Point(0, 30);
             this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
@@ -86,7 +81,6 @@
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.dataGridView1.Size = new System.Drawing.Size(922, 328);
@@ -95,28 +89,23 @@
             // Column_name
             // 
             this.Column_name.HeaderText = "名称";
-            this.Column_name.MinimumWidth = 6;
             this.Column_name.Name = "Column_name";
             this.Column_name.Width = 140;
             // 
             // Column_address
             // 
             this.Column_address.HeaderText = "设备地址";
-            this.Column_address.MinimumWidth = 6;
             this.Column_address.Name = "Column_address";
             this.Column_address.Width = 120;
             // 
             // Column_time
             // 
             this.Column_time.HeaderText = "间隔时间(ms)";
-            this.Column_time.MinimumWidth = 6;
             this.Column_time.Name = "Column_time";
-            this.Column_time.Width = 125;
             // 
             // Column_express
             // 
             this.Column_express.HeaderText = "表达式";
-            this.Column_express.MinimumWidth = 6;
             this.Column_express.Name = "Column_express";
             this.Column_express.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Column_express.Width = 200;
@@ -124,14 +113,12 @@
             // Column_current
             // 
             this.Column_current.HeaderText = "当前值";
-            this.Column_current.MinimumWidth = 6;
             this.Column_current.Name = "Column_current";
             this.Column_current.Width = 150;
             // 
             // Column_mark
             // 
             this.Column_mark.HeaderText = "备注";
-            this.Column_mark.MinimumWidth = 6;
             this.Column_mark.Name = "Column_mark";
             this.Column_mark.Width = 150;
             // 
@@ -140,9 +127,10 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoEllipsis = true;
+            this.label1.ForeColor = System.Drawing.Color.Gray;
             this.label1.Location = new System.Drawing.Point(3, 6);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(725, 17);
+            this.label1.Size = new System.Drawing.Size(693, 17);
             this.label1.TabIndex = 2;
             this.label1.Text = "变量 x 表示从0自增的整数，方波例子：x%2==0?10:0  三角函数例子 (short)(Math.Sin(2*Math.PI*x/100)*100) , " +
     "随机数: (short)r.Next(100,200)\r\n\r\n";
@@ -150,9 +138,9 @@
             // button_start
             // 
             this.button_start.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_start.Location = new System.Drawing.Point(734, 1);
+            this.button_start.Location = new System.Drawing.Point(775, 1);
             this.button_start.Name = "button_start";
-            this.button_start.Size = new System.Drawing.Size(89, 28);
+            this.button_start.Size = new System.Drawing.Size(69, 28);
             this.button_start.TabIndex = 3;
             this.button_start.Text = "开始";
             this.button_start.UseVisualStyleBackColor = true;
@@ -160,39 +148,28 @@
             // button_finish
             // 
             this.button_finish.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_finish.Location = new System.Drawing.Point(829, 0);
+            this.button_finish.Location = new System.Drawing.Point(846, 1);
             this.button_finish.Name = "button_finish";
-            this.button_finish.Size = new System.Drawing.Size(89, 28);
+            this.button_finish.Size = new System.Drawing.Size(72, 28);
             this.button_finish.TabIndex = 4;
             this.button_finish.Text = "停止";
             this.button_finish.UseVisualStyleBackColor = true;
             // 
-            // contextMenuStrip1
+            // button_onece
             // 
-            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.importToolStripMenuItem,
-            this.exportToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(211, 80);
-            // 
-            // importToolStripMenuItem
-            // 
-            this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
-            this.importToolStripMenuItem.Text = "导入";
-            this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
-            // 
-            // exportToolStripMenuItem
-            // 
-            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
-            this.exportToolStripMenuItem.Text = "导出";
-            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
+            this.button_onece.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_onece.Location = new System.Drawing.Point(702, 1);
+            this.button_onece.Name = "button_onece";
+            this.button_onece.Size = new System.Drawing.Size(69, 28);
+            this.button_onece.TabIndex = 5;
+            this.button_onece.Text = "运行一次";
+            this.button_onece.UseVisualStyleBackColor = true;
+            this.button_onece.Click += new System.EventHandler(this.button_onece_Click);
             // 
             // DataSimulateControl
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.Controls.Add(this.button_onece);
             this.Controls.Add(this.button_finish);
             this.Controls.Add(this.button_start);
             this.Controls.Add(this.label1);
@@ -202,7 +179,6 @@
             this.Size = new System.Drawing.Size(922, 358);
             this.Load += new System.EventHandler(this.DataSimulateControl_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -219,8 +195,6 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column_express;
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column_current;
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column_mark;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
+        private System.Windows.Forms.Button button_onece;
     }
 }
